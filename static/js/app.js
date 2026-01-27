@@ -6,6 +6,7 @@
 const urlInput = document.getElementById('urlInput');
 const fetchBtn = document.getElementById('fetchBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 const newDownloadBtn = document.getElementById('newDownloadBtn');
 const tryAgainBtn = document.getElementById('tryAgainBtn');
 
@@ -220,6 +221,77 @@ async function downloadVideo() {
     }
 }
 
+/**
+ * Download video without conversion
+ */
+async function downloadVideoOnly() {
+    if (!currentVideoUrl) {
+        showError('Error', 'No video selected');
+        return;
+    }
+
+    // Show loading state
+    downloadVideoBtn.classList.add('loading');
+    downloadVideoBtn.disabled = true;
+
+    // Show progress section
+    showSection(progressSection);
+
+    // Animate progress bar (fake progress since we don't have real-time updates)
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress > 90) progress = 90;
+        progressFill.style.width = `${progress}%`;
+        progressPercent.textContent = `${Math.round(progress)}%`;
+    }, 500);
+
+    try {
+        const response = await fetch('/api/download-video', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: currentVideoUrl,
+            }),
+        });
+
+        const data = await response.json();
+
+        clearInterval(progressInterval);
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Download failed');
+        }
+
+        // Complete progress
+        progressFill.style.width = '100%';
+        progressPercent.textContent = '100%';
+
+        // Wait a moment then trigger file download
+        setTimeout(() => {
+            // Create download link
+            const downloadLink = document.createElement('a');
+            downloadLink.href = `/api/get-file/${encodeURIComponent(data.filename)}`;
+            downloadLink.download = data.filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // Show success section
+            showSection(successSection);
+        }, 500);
+
+    } catch (error) {
+        clearInterval(progressInterval);
+        showError('Download Failed', error.message);
+    } finally {
+        downloadVideoBtn.classList.remove('loading');
+        downloadVideoBtn.disabled = false;
+    }
+}
+
 // Event Listeners
 fetchBtn.addEventListener('click', fetchVideoInfo);
 
@@ -230,6 +302,8 @@ urlInput.addEventListener('keypress', (e) => {
 });
 
 downloadBtn.addEventListener('click', downloadVideo);
+
+downloadVideoBtn.addEventListener('click', downloadVideoOnly);
 
 newDownloadBtn.addEventListener('click', resetToInitial);
 

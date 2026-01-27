@@ -76,6 +76,32 @@ def download():
     else:
         return jsonify({'error': 'Download failed'}), 500
 
+@app.route('/api/download-video', methods=['POST'])
+def download_video():
+    """Download video without conversion"""
+    data = request.get_json()
+    url = data.get('url', '')
+    
+    if not url:
+        return jsonify({'error': 'URL is required'}), 400
+    
+    # Validate URL
+    video_id = get_video_id_from_url(url)
+    if not video_id:
+        return jsonify({'error': 'Invalid YouTube URL'}), 400
+    
+    # Download video
+    result = downloader.download_video(url)
+    
+    if result and os.path.exists(result):
+        return jsonify({
+            'success': True,
+            'filename': os.path.basename(result),
+            'filepath': result
+        })
+    else:
+        return jsonify({'error': 'Download failed'}), 500
+
 @app.route('/api/get-file/<path:filename>')
 def get_file(filename):
     """Serve the downloaded file and delete after sending"""

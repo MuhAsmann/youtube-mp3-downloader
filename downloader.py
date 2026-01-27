@@ -150,6 +150,82 @@ class YouTubeMP3Downloader:
         elif d['status'] == 'finished':
             logger.info("Download finished, converting to MP3...")
     
+    def download_video(self, url, custom_filename=None):
+        """Download video without conversion
+        
+        Args:
+            url: YouTube video URL
+            custom_filename: Optional custom filename (without extension)
+            
+        Returns:
+            str: Path to downloaded video file or None if download failed
+        """
+        for attempt in range(self.max_retries):
+            try:
+                logger.info(f"Downloading video from {url} (Attempt {attempt+1}/{self.max_retries})")
+                
+                # Get video ID for filename
+                video_id = get_video_id_from_url(url)
+                
+                # If we couldn't get the ID from the URL helper, try to get it via yt-dlp info
+                if not video_id:
+                    with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+                        info = ydl.extract_info(url, download=False)
+                        video_id = info.get('id')
+
+                logger.info(f"Video ID: {video_id}")
+                
+                # Determine filename
+                if custom_filename:
+                    filename_template = f"{sanitize_filename(custom_filename)}"
+                else:
+                    # Get video title for filename
+                    with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+                        info = ydl.extract_info(url, download=False)
+                        title = sanitize_filename(info.get('title', video_id))
+                        filename_template = f"{title}"
+                
+                logger.info(f"Filename template: {filename_template}")
+                output_template = os.path.join(str(self.output_dir), filename_template + '.%(ext)s')
+                
+                # Download video
+                logger.info(f"Downloading video...")
+                
+                ydl_opts = {
+                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+                    'outtmpl': output_template,
+                    'quiet': False,
+                    'no_warnings': False,
+                    'progress_hooks': [self._progress_hook],
+                    'merge_output_format': 'mp4',
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=True)
+                    # Get the actual filename
+                    if info:
+                        ext = info.get('ext', 'mp4')
+                        final_path = os.path.join(str(self.output_dir), f"{filename_template}.{ext}")
+                        
+                        # Check if file exists with mp4 extension (merged output)
+                        mp4_path = os.path.join(str(self.output_dir), f"{filename_template}.mp4")
+                        if os.path.exists(mp4_path):
+                            final_path = mp4_path
+                        
+                        logger.info(f"Download complete: {final_path}")
+                        return final_path
+                
+                return None
+                
+            except Exception as e:
+                logger.warning(f"Error downloading video (attempt {attempt+1}): {str(e)}")
+                if attempt < self.max_retries - 1:
+                    logger.info(f"Retrying in {self.retry_delay} seconds...")
+                    time.sleep(self.retry_delay)
+                else:
+                    logger.error(f"Failed to download after {self.max_retries} attempts")
+                    return None
+    
     def download_multiple(self, urls):
         """Download multiple videos as MP3
         
