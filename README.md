@@ -24,13 +24,17 @@ A simple Python tool to download audio from YouTube videos as MP3 files.
 ```bash
 source venv/bin/activate
 ```
-3. Install dependencies:
+3. run
+```bash
+./venv/bin/python app.py
+```
+4. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Make sure FFmpeg is installed on your system:
+5. Make sure FFmpeg is installed on your system:
 
 ```bash
 # Ubuntu/Debian

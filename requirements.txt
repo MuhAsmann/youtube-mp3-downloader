@@ -2,3 +2,4 @@
 yt-dlp>=2023.10.13      # YouTube downloader
 ffmpeg-python>=0.2.0    # FFmpeg wrapper for audio processing
 tqdm>=4.64.0            # Progress bars
+flask>=3.0.0            # Web framework
