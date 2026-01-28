@@ -47,6 +47,7 @@ class YouTubeMP3Downloader:
                     'uploader': info.get('uploader'),
                     'thumbnail': info.get('thumbnail'),
                     'view_count': info.get('view_count'),
+                    'like_count': info.get('like_count')
                 }
         except Exception as e:
             logger.error(f"Failed to get video info: {str(e)}")

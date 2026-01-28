@@ -22,6 +22,7 @@ const videoTitle = document.getElementById('videoTitle');
 const uploader = document.getElementById('uploader');
 const views = document.getElementById('views');
 const duration = document.getElementById('duration');
+const likes = document.getElementById('likes');
 
 // Progress elements
 const progressFill = document.getElementById('progressFill');
@@ -137,6 +138,7 @@ async function fetchVideoInfo() {
         uploader.textContent = data.info.uploader || 'Unknown';
         views.textContent = formatNumber(data.info.view_count) + ' views';
         duration.textContent = formatDuration(data.info.duration);
+        likes.textContent = formatNumber(data.info.like_count) + ' likes';
 
         // Show video info section
         showSection(videoInfo);
