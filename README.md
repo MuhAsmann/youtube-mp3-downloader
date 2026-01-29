@@ -1,60 +1,110 @@
 # 🎵 YouTube MP3 Downloader
 
-A simple Python tool to download audio from YouTube videos as MP3 files.
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-3.0%2B-green?style=for-the-badge&logo=flask)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-## Features
+A powerful and easy-to-use tool to download audio from YouTube videos as MP3 files. Available as both a **Web Application** and a **Command Line Interface (CLI)**.
 
-- ✅ Download audio from YouTube videos as MP3
-- ✅ Support for various YouTube URL formats (youtube.com, youtu.be, shorts)
-- ✅ Customizable audio quality (128, 192, 256, 320 kbps)
-- ✅ Multiple audio format support (MP3, AAC, M4A, OPUS, WAV, FLAC)
-- ✅ Interactive and command-line modes
-- ✅ Automatic retry on failure
-- ✅ Progress indicator during download
+## ✨ Features
 
-## Requirements
+- 🎧 **High Quality Audio**: Download audio in various qualities (128, 192, 256, 320 kbps).
+- 🚀 **Multiple Formats**: Support for MP3, AAC, M4A, OPUS, WAV, and FLAC.
+- 🌐 **Web Interface**: Clean and simple web UI for easy downloading.
+- 💻 **CLI Mode**: Powerful command-line interface for automation and power users.
+- 🔄 **Smart Handling**: Automatic retry on failure and progress tracking.
+- 📱 **Broad Support**: Works with standard YouTube URLs, Shorts, and `youtu.be` links.
 
-- Python 3.8+
-- FFmpeg (required for audio conversion)
+## 🛠️ Tech Stack
 
-## Installation
+- **[Python](https://www.python.org/)**: Core programming language.
+- **[Flask](https://flask.palletsprojects.com/)**: Web framework for the UI.
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: Robust YouTube downloader engine.
+- **[FFmpeg](https://ffmpeg.org/)**: Multimedia framework for audio conversion.
 
-1. Clone or copy this project
-2. Active virtual environment:
-```bash
-source venv/bin/activate
-```
-3. run
-```bash
-./venv/bin/python app.py
-```
-4. Install dependencies:
+## 📋 Prerequisites
 
-```bash
-pip install -r requirements.txt
-```
+Before you begin, ensure you have the following installed:
+- **Python 3.8** or higher
+- **FFmpeg** (Required for audio conversion)
 
-5. Make sure FFmpeg is installed on your system:
+### Installing FFmpeg
+
+<details>
+<summary><strong>Ubuntu / Debian</strong></summary>
 
 ```bash
-# Ubuntu/Debian
+sudo apt update
 sudo apt install ffmpeg
+```
+</details>
 
-# macOS (Homebrew)
+<details>
+<summary><strong>macOS (Homebrew)</strong></summary>
+
+```bash
 brew install ffmpeg
+```
+</details>
 
-# Windows (Chocolatey)
+<details>
+<summary><strong>Windows (Chocolatey)</strong></summary>
+
+```bash
 choco install ffmpeg
 ```
+</details>
 
-## Usage
+## 🚀 Installation
 
-### Command Line
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd youtube-mp3-downloader
+   ```
 
+2. **Create a Virtual Environment**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## 📖 Usage
+
+### 🌐 Web Application (Recommended)
+
+Start the local web server to use the graphical interface.
+
+1. Run the Flask app:
+   ```bash
+   python app.py
+   ```
+2. Open your browser and navigate to:
+   ```
+   http://localhost:5000
+   ```
+
+### 💻 Command Line Interface (CLI)
+
+You can use the tool directly from your terminal.
+
+**Interactive Mode:**
 ```bash
-# Basic download
-python main.py https://www.youtube.com/watch?v=VIDEO_ID
+python main.py
+```
 
+**Quick Download:**
+```bash
+python main.py https://www.youtube.com/watch?v=VIDEO_ID
+```
+
+**Advanced Options:**
+```bash
 # Custom output directory
 python main.py https://www.youtube.com/watch?v=VIDEO_ID -o ./my_music
 
@@ -71,79 +121,57 @@ python main.py https://www.youtube.com/watch?v=VIDEO_ID -f flac
 python main.py https://www.youtube.com/watch?v=VIDEO_ID --info
 ```
 
-### Interactive Mode
+### 📦 Python Library
 
-```bash
-python main.py --interactive
-# or just
-python main.py
-```
-
-### As a Python Module
+You can also import the downloader into your own Python projects.
 
 ```python
 from downloader import YouTubeMP3Downloader
 
-# Initialize downloader
-downloader = YouTubeMP3Downloader(
-    output_dir="./my_music",
-    audio_quality="320",
-    audio_format="mp3"
-)
+# Initialize
+downloader = YouTubeMP3Downloader(output_dir="./music", audio_quality="320")
 
-# Get video info
-info = downloader.get_video_info("https://www.youtube.com/watch?v=VIDEO_ID")
-print(f"Title: {info['title']}")
-
-# Download single video
+# Download
 result = downloader.download("https://www.youtube.com/watch?v=VIDEO_ID")
-print(f"Downloaded: {result}")
-
-# Download multiple videos
-urls = [
-    "https://www.youtube.com/watch?v=VIDEO_ID_1",
-    "https://www.youtube.com/watch?v=VIDEO_ID_2",
-]
-results = downloader.download_multiple(urls)
+print(f"Downloaded to: {result}")
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-Edit `config.py` to change default settings:
+You can customize default behaviors by editing `config.py`:
 
 ```python
 # Default download directory
 DOWNLOADS_DIR = BASE_DIR / "downloads"
 
-# Default audio format and quality
+# Default audio settings
 DEFAULT_AUDIO_FORMAT = "mp3"
 DEFAULT_AUDIO_QUALITY = "192"  # kbps
 
 # Retry settings
 MAX_RETRIES = 3
-RETRY_DELAY = 2  # seconds
+RETRY_DELAY = 2
 ```
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 youtube-mp3-downloader/
-├── config.py           # Configuration settings
-├── downloader.py       # Main downloader class
-├── main.py             # CLI entry point
-├── requirements.txt    # Python dependencies
-├── README.md           # This file
-├── downloads/          # Default download directory
-└── utils/
-    ├── __init__.py
-    ├── helpers.py      # Helper utilities
-    └── logger.py       # Logging configuration
+├── app.py              # Flask Web Application
+├── main.py             # CLI Entry Point
+├── downloader.py       # Core Downloader Logic
+├── config.py           # Configuration Settings
+├── requirements.txt    # Dependencies
+├── downloads/          # Default Output Directory
+├── static/             # Web Assets (CSS, JS)
+├── templates/          # HTML Templates
+└── utils/              # Helper Modules
 ```
 
-## Legal Notice
+## ⚠️ Legal Notice
 
-⚠️ **Disclaimer**: This tool is for personal use only. Please respect copyright laws and YouTube's Terms of Service. Only download content that you have the right to download.
+This tool is intended for **personal use only**. Please respect copyright laws and YouTube's Terms of Service. Do not use this tool to download copyrighted content without permission.
 
-## License
+## 📄 License
 
-MIT License
+This project is licensed under the MIT License.
